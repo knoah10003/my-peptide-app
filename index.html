@@ -154,7 +154,7 @@
                             <select id="drugUnit">
                                 <option value="mg">mg</option>
                                 <option value="mcg">mcg</option>
-                                <option value="IU">IU</option>
+                                <option value="U">U</option>
                             </select>
                         </div>
                     </div>
@@ -363,12 +363,12 @@
                         <div class="output-box">
                             <div class="output-title">1회 투여 부피</div>
                             <div class="output-value" id="volMl">-</div>
-                            <div class="muted">mL</div>
+                            <div class="muted" id="volCc">-</div>
                         </div>
                         <div class="output-box">
-                            <div class="output-title">인슐린 주사 단위 (UI)</div>
+                            <div class="output-title">인슐린 주사 단위 (U)</div>
                             <div class="output-value" id="uiUnits">-</div>
-                            <div class="muted">1클릭=1UI</div>
+                            <div class="muted">1클릭=1U</div>
                         </div>
                         <div class="output-box">
                             <div class="output-title">사용 기간</div>
@@ -746,10 +746,14 @@
             document.getElementById('calcErrorBox').style.display='none';
             document.getElementById('concMgMl').textContent = '-';
             document.getElementById('concMcgMl').textContent = '-';
+            
+            // 수정됨: 초기화 로직
             document.getElementById('volMl').textContent = '-';
+            document.getElementById('volCc').textContent = '-';
+            
             document.getElementById('uiUnits').textContent = '-';
             document.getElementById('vialUsage').textContent = '-';
-            document.getElementById('vialRemain').textContent = ''; // 리셋 시 잔여량 초기화
+            document.getElementById('vialRemain').textContent = ''; 
             document.getElementById('doseMgText').textContent = '';
             document.getElementById('monthlyCostBox').style.display = 'none';
         });
@@ -778,13 +782,17 @@
 
             document.getElementById('concMgMl').textContent = `${concMg.toFixed(2)} mg/mL`;
             document.getElementById('concMcgMl').textContent = `${concMcg.toFixed(0)} mcg/mL`;
-            document.getElementById('volMl').textContent = vol.toFixed(3); 
-            document.getElementById('uiUnits').textContent = `${ui.toFixed(1)} UI`;
+            
+            // 수정됨: mL과 cc 단위 분리 및 표기
+            document.getElementById('volMl').textContent = `${vol.toFixed(3)} mL`; 
+            document.getElementById('volCc').textContent = `${vol.toFixed(3)} cc`;
+
+            document.getElementById('uiUnits').textContent = `${ui.toFixed(1)} U`;
 
             const warning = document.getElementById('penWarning');
             if(ui > 60) {
                 warning.style.display = 'block';
-                warning.textContent = `⚠ 60 UI 초과 (약 ${Math.ceil(ui/60)}회로 나누어 주사)`;
+                warning.textContent = `⚠ 60 U 초과 (약 ${Math.ceil(ui/60)}회로 나누어 주사)`;
             } else {
                 warning.style.display = 'none';
             }
@@ -796,7 +804,6 @@
             
             document.getElementById('vialUsage').textContent = `${Math.floor(rawDuration)}${unitText}`;
             
-            // 수정됨: 잔존량 계산 및 표기
             const remain = totalMcg - (doses * dMcg);
             const remainBox = document.getElementById('vialRemain');
             if (remain > 0) {
