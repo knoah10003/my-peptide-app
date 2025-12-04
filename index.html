@@ -73,30 +73,10 @@
         .chart-container { position: relative; height: 400px; width: 100%; }
         .table-responsive { max-height: 400px; overflow-y: auto; border: 1px solid #eee; border-radius: 8px; }
         
-        .list-header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-top: 30px; 
-            margin-bottom: 12px; 
-            width: 100%;
-        }
-        
-        .list-header h3 { 
-            margin: 0; 
-            white-space: nowrap; 
-            flex-shrink: 0; 
-            margin-right: 15px; 
-            font-size: 1.1em;
-        }
-
-        #historyFilterSelect {
-            flex-grow: 1;
-            min-width: 0;
-            width: auto;
-            max-width: 60%;
-            padding: 10px;
-        }
+        /* 히스토리 필터 헤더 */
+        .list-header { display: flex; justify-content: space-between; align-items: center; margin-top: 30px; margin-bottom: 12px; width: 100%; }
+        .list-header h3 { margin: 0; white-space: nowrap; flex-shrink: 0; margin-right: 15px; font-size: 1.1em; }
+        #historyFilterSelect { flex-grow: 1; min-width: 0; width: auto; max-width: 60%; padding: 10px; }
 
         /* 계산기 스타일 */
         .calc-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 20px; }
@@ -136,34 +116,17 @@
         .current-level-title { font-size: 0.9em; color: #27ae60; font-weight: bold; margin-bottom: 4px; }
         .current-level-value { font-size: 1.4em; font-weight: bold; color: #219150; }
 
-        /* [추가] 접기/펼치기 관련 스타일 */
-        .toggle-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            user-select: none;
-        }
-        .toggle-icon {
-            font-size: 0.8em;
-            color: #7f8c8d;
-            transition: transform 0.3s;
-        }
-        .toggle-content {
-            display: none; /* 기본적으로 숨김 */
-            margin-top: 15px;
-            animation: fadeIn 0.3s;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        /* 접기/펼치기 관련 스타일 */
+        .toggle-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+        .toggle-icon { font-size: 0.8em; color: #7f8c8d; transition: transform 0.3s; }
+        .toggle-content { display: none; margin-top: 15px; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
     <div class="container">
         <div style="text-align:center; margin-bottom:20px; padding-top:10px;">
-            <h1 style="margin:0; font-size:1.6em; color:#2c3e50;">💊 펩타이드 매니저 (웹 버전)</h1>
+            <h1 style="margin:0; font-size:1.6em; color:#2c3e50;">💊 펩타이드 매니저</h1>
             <span style="font-size:0.85em; color:#7f8c8d;">자동 저장 활성화됨</span>
         </div>
         
@@ -287,10 +250,15 @@
                 </div>
                 
                 <div class="form-row">
-                    <div class="form-group"><label>시작</label><input type="date" id="graphStartDate"></div>
-                    <div class="form-group"><label>종료</label><input type="date" id="graphEndDate"></div>
+                    <div class="form-group">
+                        <label>시작</label>
+                        <input type="date" id="graphStartDate" onchange="renderChart()">
+                    </div>
+                    <div class="form-group">
+                        <label>종료</label>
+                        <input type="date" id="graphEndDate" onchange="renderChart()">
+                    </div>
                 </div>
-                <button class="action-btn" onclick="renderChart()" style="margin-top:5px; height:50px;">그래프 새로고침</button>
                 <div class="chart-container" style="margin-top:20px;"><canvas id="stackChart"></canvas></div>
             </div>
         </div>
@@ -362,20 +330,23 @@
                         <div class="form-group">
                             <label>화폐</label>
                             <select id="currencyUnit">
-                                <option value="">안함</option>
-                                <option value="KRW">원</option>
-                                <option value="USD">달러</option>
+                                <option value="">선택 안함</option>
+                                <option value="KRW">원 (KRW)</option>
+                                <option value="USD">달러 (USD)</option>
                             </select>
                         </div>
-                        <div class="form-group" style="flex:2;">
-                            <label>가격</label>
-                            <input type="number" id="peptidePrice" placeholder="금액">
+                        <div class="form-group">
+                            <label>가격 기준</label>
+                             <select id="peptidePriceType">
+                                <option value="vial">1 바이알 당 가격</option>
+                                <option value="kit">1 키트(10병) 당 가격</option>
+                            </select>
                         </div>
                      </div>
-                     <select id="peptidePriceType" style="margin-top:5px;">
-                        <option value="vial">1 바이알 당 가격</option>
-                        <option value="kit">1 키트(10병) 당 가격</option>
-                    </select>
+                     <div class="form-group" style="margin-top:10px;">
+                        <label>금액 입력</label>
+                        <input type="number" id="peptidePrice" placeholder="금액을 입력하세요 (숫자)">
+                    </div>
                 </div>
 
                 <div class="calc-btn-row">
@@ -437,7 +408,7 @@
             updateUI();
         }
 
-        // ================= UI 토글 로직 (추가됨) =================
+        // ================= UI 토글 로직 =================
         function toggleSection(contentId, iconId) {
             const content = document.getElementById(contentId);
             const icon = document.getElementById(iconId);
@@ -819,7 +790,6 @@
             const doses = Math.floor(totalMcg / dMcg);
             const rawDuration = doses * iCount / iTimes;
             const unitText = iUnit === 'day' ? '일' : '주';
-            const remain = totalMcg - (doses * dMcg);
             
             document.getElementById('vialUsage').textContent = `${Math.floor(rawDuration)}${unitText}`;
             
@@ -833,8 +803,11 @@
                 const injPerMonth = (iTimes / daysPerPeriod) * 30;
                 const usedMcgPerMonth = injPerMonth * dMcg;
                 const vialsPerMonth = usedMcgPerMonth / totalMcg;
+                
+                // Kit 선택 시 가격 계산 로직 (기본적으로 Kit = 10병으로 계산)
                 let unitPrice = pType === 'kit' ? price/10 : price;
                 let monthlyCost = vialsPerMonth * unitPrice;
+                
                 const symbol = currency === 'KRW' ? '₩' : '$';
                 const formattedCost = currency === 'KRW' ? Math.round(monthlyCost).toLocaleString() : monthlyCost.toFixed(2);
                 
