@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="Peptide V10">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3063/3063183.png">
     
-    <title>펩타이드 매니저 V10 (앱버전)</title>
+    <title>펩타이드 매니저 V10 (앱버전 - UI수정)</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -22,11 +22,10 @@
             --danger-color: #e74c3c;
             --table-header-bg: #e8f6f3;
         }
-        /* 폰에서 터치감 개선 및 드래그 방지 */
         body { 
             font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif; 
             margin: 0; padding: 20px; 
-            padding-top: env(safe-area-inset-top); /* 노치 대응 */
+            padding-top: env(safe-area-inset-top); 
             background-color: #f0f2f5; color: #333; 
             -webkit-tap-highlight-color: transparent;
         }
@@ -44,9 +43,19 @@
         
         /* 공통 UI 요소 */
         .form-row { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; align-items: flex-end; }
-        .form-group { flex: 1; min-width: 130px; }
+        
+        /* [수정] min-width 제거하여 좁은 화면에서 유연하게 대응 */
+        .form-group { flex: 1; min-width: 0; }
+        
         label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.85em; color: #555; }
-        input, select { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; box-sizing: border-box; font-size: 16px; /* 16px여야 아이폰 확대 안됨 */ }
+        input, select { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+
+        /* [추가] 날짜/시간 입력칸 스타일 개선 (삐져나감 방지) */
+        input[type="date"], input[type="time"] {
+            appearance: none; -webkit-appearance: none; /* 기본 스타일 제거 */
+            padding: 12px 5px; /* 패딩 조절 */
+            text-align: center; /* 텍스트 중앙 정렬 */
+        }
         
         button.action-btn { background-color: #3498db; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; height: 46px; font-weight: bold; width: 100%; }
         button.delete-btn { background-color: var(--danger-color); padding: 6px 12px; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.8em; }
@@ -65,7 +74,12 @@
         /* 그래프 컨테이너 */
         .chart-container { position: relative; height: 400px; width: 100%; }
         .table-responsive { max-height: 400px; overflow-y: auto; border: 1px solid #eee; border-radius: 8px; }
+        
+        /* [수정] 리스트 헤더 스타일 개선 */
         .list-header { display: flex; justify-content: space-between; align-items: center; margin-top: 25px; margin-bottom: 10px; }
+        
+        /* [추가] 최근 기록 글자 줄바꿈 방지 */
+        .list-header h3 { margin: 0; white-space: nowrap; }
 
         /* 계산기 스타일 */
         .calc-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 20px; }
@@ -165,8 +179,8 @@
                 <button class="action-btn" onclick="addLog()">투여 기록 추가</button>
 
                 <div class="list-header">
-                    <h3 style="margin:0;">최근 기록</h3>
-                    <select id="historyFilterSelect" onchange="updateUI()" style="padding:5px; border-radius:6px;">
+                    <h3>최근 기록</h3>
+                    <select id="historyFilterSelect" onchange="updateUI()" style="padding:5px; border-radius:6px; flex-shrink: 0;">
                         <option value="all">전체 보기</option>
                     </select>
                 </div>
@@ -225,7 +239,7 @@
                         <input type="number" id="peptideMg" placeholder="예: 10">
                     </div>
                     <div class="calc-card">
-                        <div class="label">물 주입량 (mL)</div>
+                        <div class="label">BAC water (mL)</div>
                         <div class="pill-row" data-group="water">
                             <div class="pill" data-value="1">1</div>
                             <div class="pill" data-value="2">2</div>
@@ -346,7 +360,6 @@
             if (savedDrugs) drugs = JSON.parse(savedDrugs);
             if (savedLogs) logs = JSON.parse(savedLogs);
             
-            // 데이터 로드 후 날짜 형식 보정 등은 updateUI에서 처리됨
             updateUI();
         }
 
@@ -394,7 +407,6 @@
                     const now = Date.now();
                     if (workbook.Sheets['Drugs']) {
                         const newDrugs = XLSX.utils.sheet_to_json(workbook.Sheets['Drugs']);
-                        // 기존 데이터에 병합 (ID가 겹치지 않게 처리하거나 덮어쓰기)
                         drugs = newDrugs.map((d, idx) => ({ ...d, id: d.id || (now + idx) }));
                     }
                     if (workbook.Sheets['Logs']) {
@@ -402,7 +414,7 @@
                         newLogs = newLogs.map((l, idx) => ({ ...l, id: l.id || (now + 1000 + idx) }));
                         logs = fixTimeFormat(newLogs);
                     }
-                    saveData(); // [중요] 엑셀 로드 후 자동 저장
+                    saveData();
                     alert("데이터 로드 완료! (" + logs.length + "개의 기록)");
                     updateUI();
                 } catch (error) {
@@ -430,7 +442,7 @@
             const note = document.getElementById('drugNote').value;
             if (!name || isNaN(halfLife)) return alert("약물명과 반감기는 필수입니다.");
             drugs.push({ id: Date.now(), name: name, unit: unit, halfLife: halfLife, note: note });
-            saveData(); // [중요] 추가 시 저장
+            saveData();
             updateUI();
             document.getElementById('drugName').value = '';
             document.getElementById('drugHalfLife').value = '';
@@ -441,7 +453,7 @@
             if (!confirm("삭제하시겠습니까? 관련 투여 기록도 삭제됩니다.")) return;
             drugs = drugs.filter(d => d.id !== id);
             logs = logs.filter(l => l.drugId !== id);
-            saveData(); // [중요] 삭제 시 저장
+            saveData();
             updateUI();
         }
 
@@ -463,7 +475,7 @@
                 site: site,
                 datetime: `${date}T${time}`
             });
-            saveData(); // [중요] 추가 시 저장
+            saveData();
             updateUI();
         }
 
@@ -471,7 +483,7 @@
             if (!id && id !== 0) return;
             if (!confirm("기록을 삭제합니까?")) return;
             logs = logs.filter(l => l.id != id);
-            saveData(); // [중요] 삭제 시 저장
+            saveData();
             updateUI();
         }
 
@@ -523,7 +535,7 @@
             
             sorted.forEach(l => {
                 if(curFilter !== 'all' && l.drugId != curFilter) return;
-                const dt = l.datetime.replace('T',' ').substring(2, 16); // 24-12-04 12:00 형식
+                const dt = l.datetime.replace('T',' ').substring(2, 16);
                 logTbody.innerHTML += `<tr><td>${dt}</td><td><strong>${l.drugName}</strong><br>${l.dose}${l.unit||'mg'} / ${l.site||'-'}</td><td><button class="delete-btn" onclick="deleteLog(${l.id})">삭제</button></td></tr>`;
             });
             if(logTbody.innerHTML === '') logTbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:20px; color:#999;">기록 없음</td></tr>';
