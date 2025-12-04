@@ -288,7 +288,7 @@
                             <div class="pill" data-value="custom">입력</div>
                         </div>
                         <input type="number" id="waterMl" placeholder="예: 2">
-                        <div class="muted" id="waterCcText"></div>
+                        <div class="muted" id="waterCcText" style="color:#27ae60; font-weight:bold;"></div>
                     </div>
                     <div class="calc-card">
                         <div class="label">1회 투여량 (mcg)</div>
@@ -373,6 +373,7 @@
                         <div class="output-box">
                             <div class="output-title">사용 기간</div>
                             <div class="output-value" id="vialUsage">-</div>
+                            <div class="muted" id="vialRemain" style="color:#e74c3c; font-size:0.85em; margin-top:4px;"></div>
                         </div>
                     </div>
                     <div class="warning-text" id="penWarning" style="display:none; text-align:center; margin-top:10px;"></div>
@@ -673,10 +674,7 @@
                     },
                     interaction: { mode: 'nearest', axis: 'x', intersect: false },
                     plugins: {
-                        // 수정됨: 그래프 위 범례(Legend) 숨김
-                        legend: {
-                            display: false
-                        },
+                        legend: { display: false },
                         tooltip: {
                             mode: 'index',
                             intersect: false,
@@ -730,7 +728,8 @@
         function updateDoseMg() {
             const v = parseFloat(document.getElementById('doseMcg').value);
             const t = document.getElementById('doseMgText');
-            if(v > 0) t.textContent = `(${v/1000} mg)`;
+            // 수정됨: 괄호 제거
+            if(v > 0) t.textContent = `${v/1000} mg`;
             else t.textContent = '';
         }
 
@@ -750,6 +749,7 @@
             document.getElementById('volMl').textContent = '-';
             document.getElementById('uiUnits').textContent = '-';
             document.getElementById('vialUsage').textContent = '-';
+            document.getElementById('vialRemain').textContent = ''; // 리셋 시 잔여량 초기화
             document.getElementById('doseMgText').textContent = '';
             document.getElementById('monthlyCostBox').style.display = 'none';
         });
@@ -796,6 +796,15 @@
             
             document.getElementById('vialUsage').textContent = `${Math.floor(rawDuration)}${unitText}`;
             
+            // 수정됨: 잔존량 계산 및 표기
+            const remain = totalMcg - (doses * dMcg);
+            const remainBox = document.getElementById('vialRemain');
+            if (remain > 0) {
+                remainBox.textContent = `(잔여: ${Math.round(remain)} mcg)`;
+            } else {
+                remainBox.textContent = '';
+            }
+            
             // 비용
             const currency = document.getElementById('currencyUnit').value;
             const price = parseFloat(document.getElementById('peptidePrice').value);
@@ -807,7 +816,6 @@
                 const usedMcgPerMonth = injPerMonth * dMcg;
                 const vialsPerMonth = usedMcgPerMonth / totalMcg;
                 
-                // Kit 선택 시 가격 계산 로직 (기본적으로 Kit = 10병으로 계산)
                 let unitPrice = pType === 'kit' ? price/10 : price;
                 let monthlyCost = vialsPerMonth * unitPrice;
                 
