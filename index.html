@@ -127,7 +127,6 @@
     <div class="container">
         <div style="text-align:center; margin-bottom:20px; padding-top:10px;">
             <h1 style="margin:0; font-size:1.6em; color:#2c3e50;">💊 펩타이드 매니저</h1>
-            <span style="font-size:0.85em; color:#7f8c8d;">자동 저장 활성화됨</span>
         </div>
         
         <div class="tabs">
@@ -674,6 +673,10 @@
                     },
                     interaction: { mode: 'nearest', axis: 'x', intersect: false },
                     plugins: {
+                        // 수정됨: 그래프 위 범례(Legend) 숨김
+                        legend: {
+                            display: false
+                        },
                         tooltip: {
                             mode: 'index',
                             intersect: false,
@@ -824,5 +827,3 @@
     </script>
 </body>
 </html>
-
-
