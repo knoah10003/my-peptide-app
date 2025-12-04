@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Peptide V10">
+    <meta name="apple-mobile-web-app-title" content="Peptide Web">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3063/3063183.png">
     
-    <title>펩타이드 매니저(앱버전)</title>
+    <title>펩타이드 매니저 (웹 버전)</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -31,42 +31,41 @@
         }
         .container { max-width: 1000px; margin: 0 auto; padding-bottom: 50px; }
         .card { background: white; padding: 20px; margin-bottom: 20px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        h2 { border-bottom: 2px solid var(--secondary-color); padding-bottom: 10px; margin-top: 0; color: #2c3e50; font-size: 1.2em; }
+        h2 { border-bottom: 2px solid var(--secondary-color); padding-bottom: 10px; margin-top: 0; color: #2c3e50; font-size: 1.3em; }
         
         /* 엑셀 패널 */
         .excel-panel {
             background-color: #fff; padding: 15px; border-radius: 12px; border: 1px solid #27ae60;
             margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
         }
-        .btn-excel-save { background-color: #27ae60; color: white; padding: 10px 15px; font-size: 0.9em; border:none; border-radius:8px; cursor:pointer; font-weight:bold; }
-        .btn-excel-load { background-color: #7f8c8d; color: white; padding: 10px 15px; font-size: 0.9em; border:none; border-radius:8px; cursor:pointer; font-weight:bold; margin-left: 5px; }
+        .btn-excel-save { background-color: #27ae60; color: white; padding: 12px 15px; font-size: 1em; border:none; border-radius:8px; cursor:pointer; font-weight:bold; }
+        .btn-excel-load { background-color: #7f8c8d; color: white; padding: 12px 15px; font-size: 1em; border:none; border-radius:8px; cursor:pointer; font-weight:bold; margin-left: 5px; }
         
-        /* 공통 UI 요소 */
-        .form-row { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; align-items: flex-end; }
-        
-        /* [수정] min-width 제거하여 좁은 화면에서 유연하게 대응 */
+        /* 공통 UI 요소 - [수정] 글씨 크기 확대 */
+        .form-row { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; align-items: flex-end; }
         .form-group { flex: 1; min-width: 0; }
         
-        label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.85em; color: #555; }
-        input, select { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.95em; color: #555; }
+        
+        /* [수정] 입력창 폰트 사이즈 17px로 확대 (가독성 향상) */
+        input, select { width: 100%; padding: 14px 12px; border: 1px solid var(--border-color); border-radius: 10px; box-sizing: border-box; font-size: 17px; }
 
-        /* [추가] 날짜/시간 입력칸 스타일 개선 (삐져나감 방지) */
         input[type="date"], input[type="time"] {
-            appearance: none; -webkit-appearance: none; /* 기본 스타일 제거 */
-            padding: 12px 5px; /* 패딩 조절 */
-            text-align: center; /* 텍스트 중앙 정렬 */
+            appearance: none; -webkit-appearance: none; 
+            padding: 14px 5px;
+            text-align: center;
         }
         
-        button.action-btn { background-color: #3498db; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; height: 46px; font-weight: bold; width: 100%; }
-        button.delete-btn { background-color: var(--danger-color); padding: 6px 12px; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.8em; }
+        button.action-btn { background-color: #3498db; color: white; border: none; padding: 14px 20px; border-radius: 10px; cursor: pointer; height: 50px; font-size: 1.05em; font-weight: bold; width: 100%; }
+        button.delete-btn { background-color: var(--danger-color); padding: 8px 14px; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85em; }
         
-        table { width: 100%; border-collapse: collapse; margin-top: 5px; font-size: 0.9em; }
-        th, td { text-align: left; padding: 10px; border-bottom: 1px solid var(--border-color); }
+        table { width: 100%; border-collapse: collapse; margin-top: 5px; font-size: 0.95em; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid var(--border-color); }
         th { background-color: var(--table-header-bg); font-weight: bold; color: #27ae60; }
 
         /* 탭 스타일 */
         .tabs { display: flex; margin-bottom: 15px; background: #e0e0e0; border-radius: 10px; padding: 4px; }
-        .tab-btn { flex: 1; text-align: center; color: #666; padding: 10px 0; border-radius: 8px; cursor: pointer; transition: 0.2s; font-weight: bold; font-size: 0.9em; }
+        .tab-btn { flex: 1; text-align: center; color: #666; padding: 12px 0; border-radius: 8px; cursor: pointer; transition: 0.2s; font-weight: bold; font-size: 1em; }
         .tab-btn.active { background: white; color: #3498db; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
@@ -75,42 +74,66 @@
         .chart-container { position: relative; height: 400px; width: 100%; }
         .table-responsive { max-height: 400px; overflow-y: auto; border: 1px solid #eee; border-radius: 8px; }
         
-        /* [수정] 리스트 헤더 스타일 개선 */
-        .list-header { display: flex; justify-content: space-between; align-items: center; margin-top: 25px; margin-bottom: 10px; }
+        /* [수정] 리스트 헤더 스타일 개선 (삐져나감 방지) */
+        .list-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-top: 30px; 
+            margin-bottom: 12px; 
+            width: 100%;
+        }
         
-        /* [추가] 최근 기록 글자 줄바꿈 방지 */
-        .list-header h3 { margin: 0; white-space: nowrap; }
+        .list-header h3 { 
+            margin: 0; 
+            white-space: nowrap; 
+            flex-shrink: 0; 
+            margin-right: 15px; 
+            font-size: 1.1em;
+        }
 
-        /* 계산기 스타일 */
+        /* [수정] 드롭다운 최대 너비 설정으로 삐져나감 해결 */
+        #historyFilterSelect {
+            flex-grow: 1; /* 남은 공간 차지 */
+            min-width: 0; /* 줄어들 수 있게 허용 */
+            width: auto;
+            max-width: 60%; /* 화면의 60%를 넘지 않게 */
+            padding: 10px;
+        }
+
+        /* 계산기 스타일 - [수정] 폰트 확대 */
         .calc-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 20px; }
         @media (min-width: 600px) { .calc-grid { grid-template-columns: repeat(2, 1fr); } }
         
-        .calc-card { background: #fafafa; border: 1px solid #eee; border-radius: 10px; padding: 15px; }
-        .pill-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
-        .pill { padding: 8px 14px; border-radius: 20px; border: 1px solid #ddd; background: #fff; font-size: 0.9em; cursor: pointer; }
+        .calc-card { background: #fafafa; border: 1px solid #eee; border-radius: 10px; padding: 18px; }
+        .pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+        
+        /* [수정] 알약 버튼 크기 확대 */
+        .pill { padding: 10px 16px; border-radius: 25px; border: 1px solid #ddd; background: #fff; font-size: 1em; cursor: pointer; }
         .pill.active { background: var(--primary-light); border-color: var(--primary-color); color: var(--primary-color); font-weight: bold; }
-        .unit-label { font-size: 0.9em; color: #555; margin-left: 8px; white-space: nowrap; }
-        .muted { font-size: 0.85em; color: #777; margin-top: 5px; }
+        
+        .unit-label { font-size: 1em; color: #555; margin-left: 8px; white-space: nowrap; }
+        .muted { font-size: 0.9em; color: #777; margin-top: 6px; }
         
         .outputs { margin-top: 20px; border-top: 2px dashed #ddd; padding-top: 20px; }
-        .output-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .output-box { background: #e8f6f3; border: 1px solid #27ae60; border-radius: 8px; padding: 12px; text-align: center; }
-        .output-title { font-weight: bold; font-size: 0.8em; color: #27ae60; margin-bottom: 4px; }
-        .output-value { font-size: 1.1em; font-weight: bold; color: #333; }
+        .output-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .output-box { background: #e8f6f3; border: 1px solid #27ae60; border-radius: 10px; padding: 15px; text-align: center; }
+        .output-title { font-weight: bold; font-size: 0.9em; color: #27ae60; margin-bottom: 5px; }
+        .output-value { font-size: 1.25em; font-weight: bold; color: #333; }
         
-        .calc-btn-row { margin-top: 20px; display: flex; gap: 10px; }
-        .btn-calc-reset { flex:1; background-color: #95a5a6; color: white; padding: 12px; border:none; border-radius:8px; font-weight:bold; }
-        .btn-calc-run { flex:2; background-color: #27ae60; color: white; padding: 12px; border:none; border-radius:8px; font-weight:bold; }
+        .calc-btn-row { margin-top: 20px; display: flex; gap: 12px; }
+        .btn-calc-reset { flex:1; background-color: #95a5a6; color: white; padding: 14px; border:none; border-radius:10px; font-weight:bold; font-size: 1em; }
+        .btn-calc-run { flex:2; background-color: #27ae60; color: white; padding: 14px; border:none; border-radius:10px; font-weight:bold; font-size: 1em; }
         
-        .warning-text { color: var(--danger-color); font-size: 0.9em; margin-top: 5px; font-weight: bold; }
-        .error-box { background-color: #fdecea; color: var(--danger-color); padding: 12px; border-radius: 8px; margin-bottom: 15px; display: none; border: 1px solid #fadbd8; font-weight: bold; }
+        .warning-text { color: var(--danger-color); font-size: 0.95em; margin-top: 8px; font-weight: bold; }
+        .error-box { background-color: #fdecea; color: var(--danger-color); padding: 14px; border-radius: 10px; margin-bottom: 15px; display: none; border: 1px solid #fadbd8; font-weight: bold; }
     </style>
 </head>
 <body>
     <div class="container">
         <div style="text-align:center; margin-bottom:20px; padding-top:10px;">
-            <h1 style="margin:0; font-size:1.5em; color:#2c3e50;">💊 Peptide V10</h1>
-            <span style="font-size:0.8em; color:#7f8c8d;">자동 저장 활성화됨</span>
+            <h1 style="margin:0; font-size:1.6em; color:#2c3e50;">💊 펩타이드 매니저 (웹 버전)</h1>
+            <span style="font-size:0.85em; color:#7f8c8d;">자동 저장 활성화됨</span>
         </div>
         
         <div class="tabs">
@@ -180,7 +203,7 @@
 
                 <div class="list-header">
                     <h3>최근 기록</h3>
-                    <select id="historyFilterSelect" onchange="updateUI()" style="padding:5px; border-radius:6px; flex-shrink: 0;">
+                    <select id="historyFilterSelect" onchange="updateUI()">
                         <option value="all">전체 보기</option>
                     </select>
                 </div>
@@ -194,9 +217,9 @@
             </div>
 
             <div class="excel-panel">
-                <div style="font-size:0.9em; font-weight:bold; color:#27ae60; width:100%; margin-bottom:5px;">📂 데이터 백업 (엑셀)</div>
-                <input type="file" id="excelInput" accept=".xlsx, .xls" onchange="storeFile(event)" style="width:100%; margin-bottom:5px;">
-                <div style="display:flex; gap:5px; width:100%;">
+                <div style="font-size:0.95em; font-weight:bold; color:#27ae60; width:100%; margin-bottom:8px;">📂 데이터 백업 (엑셀)</div>
+                <input type="file" id="excelInput" accept=".xlsx, .xls" onchange="storeFile(event)" style="width:100%; margin-bottom:8px;">
+                <div style="display:flex; gap:8px; width:100%;">
                     <button class="btn-excel-load" style="flex:1" onclick="loadStoredFile()">불러오기</button>
                     <button class="btn-excel-save" style="flex:1" onclick="exportToExcel()">저장하기</button>
                 </div>
@@ -216,7 +239,7 @@
                     <div class="form-group"><label>시작</label><input type="date" id="graphStartDate"></div>
                     <div class="form-group"><label>종료</label><input type="date" id="graphEndDate"></div>
                 </div>
-                <button class="action-btn" onclick="renderChart()" style="margin-top:5px; height:40px;">그래프 새로고침</button>
+                <button class="action-btn" onclick="renderChart()" style="margin-top:5px; height:50px;">그래프 새로고침</button>
                 <div class="chart-container" style="margin-top:20px;"><canvas id="stackChart"></canvas></div>
             </div>
         </div>
@@ -226,7 +249,7 @@
                 <h2>💉 재구성 계산기</h2>
                 <div id="calcErrorBox" class="error-box"></div>
 
-                <div class="section-title" style="font-weight:bold; color:#555; margin-bottom:10px;">1. 재구성 조건</div>
+                <div class="section-title" style="font-weight:bold; color:#555; margin-bottom:12px; font-size:1.1em;">1. 재구성 조건</div>
                 <div class="calc-grid">
                     <div class="calc-card">
                         <div class="label">펩타이드 양 (mg)</div>
@@ -261,7 +284,7 @@
                     </div>
                 </div>
 
-                <div class="section-title" style="font-weight:bold; color:#555; margin-bottom:10px;">2. 투여 주기</div>
+                <div class="section-title" style="font-weight:bold; color:#555; margin-bottom:12px; font-size:1.1em;">2. 투여 주기</div>
                 <div class="calc-card" style="margin-bottom:15px;">
                     <div class="form-row">
                         <div class="form-group">
@@ -282,7 +305,7 @@
                     </div>
                 </div>
 
-                <div class="section-title" style="font-weight:bold; color:#555; margin-bottom:10px;">3. 비용 (선택)</div>
+                <div class="section-title" style="font-weight:bold; color:#555; margin-bottom:12px; font-size:1.1em;">3. 비용 (선택)</div>
                 <div class="calc-card">
                      <div class="form-row">
                         <div class="form-group">
@@ -500,7 +523,7 @@
             const drugTbody = document.querySelector('#drugTable tbody');
             drugTbody.innerHTML = '';
             drugs.forEach(d => {
-                drugTbody.innerHTML += `<tr><td><strong>${d.name}</strong></td><td><span style="font-size:0.85em; color:#666;">${d.halfLife}h / ${d.unit}</span><br><span style="font-size:0.8em; color:#999;">${d.note||''}</span></td><td><button class="delete-btn" onclick="deleteDrug(${d.id})">삭제</button></td></tr>`;
+                drugTbody.innerHTML += `<tr><td><strong>${d.name}</strong></td><td><span style="font-size:0.9em; color:#666;">${d.halfLife}h / ${d.unit}</span><br><span style="font-size:0.85em; color:#999;">${d.note||''}</span></td><td><button class="delete-btn" onclick="deleteDrug(${d.id})">삭제</button></td></tr>`;
             });
             
             const logSelect = document.getElementById('logDrugSelect');
@@ -742,4 +765,3 @@
     </script>
 </body>
 </html>
-
