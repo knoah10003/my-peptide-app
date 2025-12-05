@@ -20,7 +20,7 @@
             --secondary-color: #f5f7fa;
             --border-color: #ddd;
             --danger-color: #e74c3c;
-            --edit-color: #f39c12; /* 수정 버튼 색상 */
+            --edit-color: #f39c12;
             --table-header-bg: #e8f6f3;
         }
         body { 
@@ -58,9 +58,7 @@
         
         button.action-btn { background-color: #3498db; color: white; border: none; padding: 14px 20px; border-radius: 10px; cursor: pointer; height: 50px; font-size: 1.05em; font-weight: bold; width: 100%; }
         
-        /* 버튼 스타일 수정 (세로 배치용) */
         .btn-stack { display: flex; flex-direction: column; gap: 4px; }
-        
         button.delete-btn { background-color: var(--danger-color); padding: 6px 12px; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85em; width: 100%; }
         button.edit-btn { background-color: var(--edit-color); padding: 6px 12px; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85em; width: 100%; }
         
@@ -178,7 +176,7 @@
                     
                     <div class="table-responsive" style="margin-top:15px;">
                         <table id="drugTable">
-                            <thead><tr><th>펩타이드명</th><th>반감기 / 용량단위</th><th>삭제</th></tr></thead>
+                            <thead><tr><th>펩타이드명</th><th>반감기 / 용량단위</th><th>수정/삭제</th></tr></thead>
                             <tbody></tbody>
                         </table>
                     </div>
@@ -432,6 +430,7 @@
         let drugs = [];
         let logs = [];
         let selectedFile = null;
+        let editingDrugId = null; // [수정됨] 펩타이드 수정을 위한 변수 추가
         
         document.getElementById('logDate').valueAsDate = new Date();
         document.getElementById('logTime').value = new Date().toTimeString().slice(0,5);
@@ -500,18 +499,53 @@
             XLSX.writeFile(wb, filename);
         }
 
+        // [수정됨] 펩타이드 추가/수정 로직
         function addDrug() {
             const name = document.getElementById('drugName').value;
             const unit = document.getElementById('drugUnit').value;
             const halfLife = parseFloat(document.getElementById('drugHalfLife').value);
             const note = document.getElementById('drugNote').value;
             if (!name || isNaN(halfLife)) return alert("펩타이드명과 반감기는 필수입니다.");
-            drugs.push({ id: Date.now(), name: name, unit: unit, halfLife: halfLife, note: note });
+            
+            // ID 결정 (수정 모드이면 기존 ID 유지, 아니면 새 ID 생성)
+            const id = editingDrugId || Date.now();
+            
+            drugs.push({ id: id, name: name, unit: unit, halfLife: halfLife, note: note });
+            
+            // 수정 모드였다면 변수 초기화
+            editingDrugId = null;
+            
             saveData();
             updateUI();
+            
+            // 입력창 초기화
             document.getElementById('drugName').value = '';
             document.getElementById('drugHalfLife').value = '';
             document.getElementById('drugNote').value = '';
+        }
+
+        // [추가됨] 펩타이드 수정 함수
+        function editDrug(id) {
+            const drug = drugs.find(d => d.id == id);
+            if(!drug) return;
+
+            // 입력창에 값 채우기
+            document.getElementById('drugName').value = drug.name;
+            document.getElementById('drugUnit').value = drug.unit;
+            document.getElementById('drugHalfLife').value = drug.halfLife;
+            document.getElementById('drugNote').value = drug.note || '';
+
+            // 수정 모드 진입 (ID 저장)
+            editingDrugId = id;
+
+            // 목록에서 시각적으로 제거 (데이터는 재등록 시 다시 들어감)
+            drugs = drugs.filter(d => d.id !== id);
+            
+            // UI 업데이트 (목록에서 사라짐)
+            updateUI();
+            
+            // 스크롤 이동
+            document.querySelector('#drugRegisterContent').scrollIntoView({behavior: 'smooth'});
         }
 
         function deleteDrug(id) {
@@ -552,7 +586,7 @@
             updateUI();
         }
 
-        // [추가됨] 로그 수정 기능
+        // 로그 수정 기능
         function editLog(id) {
             const log = logs.find(l => l.id == id);
             if(!log) return;
@@ -569,13 +603,11 @@
                 document.getElementById('logTime').value = parts[1];
             }
 
-            // 삭제 안내 및 진행
             if(confirm("이 기록을 불러와서 수정하시겠습니까?\n(현재 목록에서 사라지고 입력창으로 이동합니다)")) {
                 logs = logs.filter(l => l.id != id);
                 saveData();
                 updateUI();
                 
-                // 입력창 위치로 스크롤 이동 (선택사항)
                 const inputArea = document.querySelector('.card:nth-of-type(2)');
                 if(inputArea) inputArea.scrollIntoView({behavior: 'smooth'});
             }
@@ -591,10 +623,21 @@
         }
 
         function updateUI() {
+            // [수정됨] 펩타이드 테이블 UI 업데이트 (버튼 추가)
             const drugTbody = document.querySelector('#drugTable tbody');
             drugTbody.innerHTML = '';
             drugs.forEach(d => {
-                drugTbody.innerHTML += `<tr><td><strong>${d.name}</strong></td><td><span style="font-size:0.9em; color:#666;">${d.halfLife}h / ${d.unit}</span><br><span style="font-size:0.85em; color:#999;">${d.note||''}</span></td><td><button class="delete-btn" onclick="deleteDrug(${d.id})">삭제</button></td></tr>`;
+                drugTbody.innerHTML += `
+                <tr>
+                    <td><strong>${d.name}</strong></td>
+                    <td><span style="font-size:0.9em; color:#666;">${d.halfLife}h / ${d.unit}</span><br><span style="font-size:0.85em; color:#999;">${d.note||''}</span></td>
+                    <td style="width: 70px;">
+                        <div class="btn-stack">
+                            <button class="edit-btn" onclick="editDrug(${d.id})">수정</button>
+                            <button class="delete-btn" onclick="deleteDrug(${d.id})">삭제</button>
+                        </div>
+                    </td>
+                </tr>`;
             });
             
             const logSelect = document.getElementById('logDrugSelect');
@@ -630,17 +673,15 @@
             sorted.forEach(l => {
                 if(curFilter !== 'all' && l.drugId != curFilter) return;
                 
-                // [수정됨] 날짜 시간 분리 처리
                 let datePart = '', timePart = '';
                 if(l.datetime.includes('T')) {
                     const parts = l.datetime.split('T');
-                    datePart = parts[0].substring(2); // 2025 -> 25
+                    datePart = parts[0].substring(2); 
                     timePart = parts[1];
                 } else {
                     datePart = l.datetime; 
                 }
 
-                // [수정됨] 수정/삭제 버튼 세로 배치
                 logTbody.innerHTML += `
                 <tr>
                     <td>${datePart}<br><span style="color:#888; font-size:0.85em;">${timePart}</span></td>
@@ -784,7 +825,6 @@
         function updateDoseMg() {
             const v = parseFloat(document.getElementById('doseMcg').value);
             const t = document.getElementById('doseMgText');
-            // 수정됨: 괄호 제거
             if(v > 0) t.textContent = `${v/1000} mg`;
             else t.textContent = '';
         }
@@ -802,11 +842,8 @@
             document.getElementById('calcErrorBox').style.display='none';
             document.getElementById('concMgMl').textContent = '-';
             document.getElementById('concMcgMl').textContent = '-';
-            
-            // 수정됨: 초기화 로직
             document.getElementById('volMl').textContent = '-';
             document.getElementById('volCc').textContent = '-';
-            
             document.getElementById('uiUnits').textContent = '-';
             document.getElementById('vialUsage').textContent = '-';
             document.getElementById('vialRemain').textContent = ''; 
@@ -839,7 +876,6 @@
             document.getElementById('concMgMl').textContent = `${concMg.toFixed(2)} mg/mL`;
             document.getElementById('concMcgMl').textContent = `${concMcg.toFixed(0)} mcg/mL`;
             
-            // 수정됨: mL과 cc 단위 분리 및 표기
             document.getElementById('volMl').textContent = `${vol.toFixed(3)} mL`; 
             document.getElementById('volCc').textContent = `${vol.toFixed(3)} cc`;
 
