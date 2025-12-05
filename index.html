@@ -134,12 +134,12 @@
         </div>
         
         <div class="tabs">
-            <div class="tab-btn active" onclick="showTab('manage')">기록 관리</div>
-            <div class="tab-btn" onclick="showTab('analyze')">그래프</div>
+            <div class="tab-btn" onclick="showTab('manage')">기록 관리</div>
+            <div class="tab-btn active" onclick="showTab('analyze')">그래프</div>
             <div class="tab-btn" onclick="showTab('calculator')">계산기</div>
         </div>
 
-        <div id="manage" class="tab-content active">
+        <div id="manage" class="tab-content">
             <div class="card">
                 <div class="toggle-header" onclick="toggleSection('drugRegisterContent', 'drugArrow')">
                     <h2 style="border:none; margin:0;">1. 펩타이드 등록</h2>
@@ -237,7 +237,7 @@
             </div>
         </div>
 
-        <div id="analyze" class="tab-content">
+        <div id="analyze" class="tab-content active">
             <div class="card">
                 <h2>📈 체내 펩타이드 잔존량 분석</h2>
                 <div class="form-group" style="margin-bottom:15px;">
@@ -508,7 +508,6 @@
             
             const id = editingDrugId || Date.now();
             
-            // [수정됨] 펩타이드 수정 시 기존 로그의 정보도 함께 업데이트
             if (editingDrugId) {
                 logs.forEach(l => {
                     if (l.drugId === id) {
