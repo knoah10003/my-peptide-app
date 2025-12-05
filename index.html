@@ -430,7 +430,7 @@
         let drugs = [];
         let logs = [];
         let selectedFile = null;
-        let editingDrugId = null; // [수정됨] 펩타이드 수정을 위한 변수 추가
+        let editingDrugId = null; 
         
         document.getElementById('logDate').valueAsDate = new Date();
         document.getElementById('logTime').value = new Date().toTimeString().slice(0,5);
@@ -499,7 +499,6 @@
             XLSX.writeFile(wb, filename);
         }
 
-        // [수정됨] 펩타이드 추가/수정 로직
         function addDrug() {
             const name = document.getElementById('drugName').value;
             const unit = document.getElementById('drugUnit').value;
@@ -507,44 +506,46 @@
             const note = document.getElementById('drugNote').value;
             if (!name || isNaN(halfLife)) return alert("펩타이드명과 반감기는 필수입니다.");
             
-            // ID 결정 (수정 모드이면 기존 ID 유지, 아니면 새 ID 생성)
             const id = editingDrugId || Date.now();
+            
+            // [수정됨] 펩타이드 수정 시 기존 로그의 정보도 함께 업데이트
+            if (editingDrugId) {
+                logs.forEach(l => {
+                    if (l.drugId === id) {
+                        l.drugName = name;
+                        l.unit = unit;
+                        l.halfLife = halfLife;
+                    }
+                });
+            }
             
             drugs.push({ id: id, name: name, unit: unit, halfLife: halfLife, note: note });
             
-            // 수정 모드였다면 변수 초기화
             editingDrugId = null;
             
             saveData();
             updateUI();
             
-            // 입력창 초기화
             document.getElementById('drugName').value = '';
             document.getElementById('drugHalfLife').value = '';
             document.getElementById('drugNote').value = '';
         }
 
-        // [추가됨] 펩타이드 수정 함수
         function editDrug(id) {
             const drug = drugs.find(d => d.id == id);
             if(!drug) return;
 
-            // 입력창에 값 채우기
             document.getElementById('drugName').value = drug.name;
             document.getElementById('drugUnit').value = drug.unit;
             document.getElementById('drugHalfLife').value = drug.halfLife;
             document.getElementById('drugNote').value = drug.note || '';
 
-            // 수정 모드 진입 (ID 저장)
             editingDrugId = id;
 
-            // 목록에서 시각적으로 제거 (데이터는 재등록 시 다시 들어감)
             drugs = drugs.filter(d => d.id !== id);
             
-            // UI 업데이트 (목록에서 사라짐)
             updateUI();
             
-            // 스크롤 이동
             document.querySelector('#drugRegisterContent').scrollIntoView({behavior: 'smooth'});
         }
 
@@ -586,12 +587,10 @@
             updateUI();
         }
 
-        // 로그 수정 기능
         function editLog(id) {
             const log = logs.find(l => l.id == id);
             if(!log) return;
 
-            // 입력창에 값 채우기
             document.getElementById('logDrugSelect').value = log.drugId;
             updateDoseLabel();
             document.getElementById('logDose').value = log.dose;
@@ -623,7 +622,6 @@
         }
 
         function updateUI() {
-            // [수정됨] 펩타이드 테이블 UI 업데이트 (버튼 추가)
             const drugTbody = document.querySelector('#drugTable tbody');
             drugTbody.innerHTML = '';
             drugs.forEach(d => {
@@ -934,4 +932,3 @@
     </script>
 </body>
 </html>
-
