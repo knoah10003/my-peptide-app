@@ -138,7 +138,7 @@
         <div id="manage" class="tab-content active">
             <div class="card">
                 <div class="toggle-header" onclick="toggleSection('drugRegisterContent', 'drugArrow')">
-                    <h2 style="border:none; margin:0;">1. 약물 등록 (설정)</h2>
+                    <h2 style="border:none; margin:0;">1. 펩타이드 등록</h2>
                     <span id="drugArrow" class="toggle-icon">▼</span>
                 </div>
                 
@@ -146,8 +146,8 @@
                     <div style="border-top: 2px solid #f5f7fa; padding-top: 15px; margin-bottom: 15px;"></div>
                     <div class="form-row">
                         <div class="form-group" style="flex: 2;">
-                            <label>약물명</label>
-                            <input type="text" id="drugName" placeholder="예: Mounjaro">
+                            <label>펩타이드명</label>
+                            <input type="text" id="drugName" placeholder="예: Tirzepatide">
                         </div>
                         <div class="form-group">
                             <label>단위</label>
@@ -168,11 +168,11 @@
                             <input type="text" id="drugNote" placeholder="설명">
                         </div>
                     </div>
-                    <button class="action-btn" onclick="addDrug()">약물 추가하기</button>
+                    <button class="action-btn" onclick="addDrug()">펩타이드 추가하기</button>
                     
                     <div class="table-responsive" style="margin-top:15px;">
                         <table id="drugTable">
-                            <thead><tr><th>약물명</th><th>정보</th><th>삭제</th></tr></thead>
+                            <thead><tr><th>펩타이드명</th><th>정보</th><th>삭제</th></tr></thead>
                             <tbody></tbody>
                         </table>
                     </div>
@@ -183,7 +183,7 @@
                 <h2>2. 투여 기록 입력</h2>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>약물 선택</label>
+                        <label>펩타이드 선택</label>
                         <select id="logDrugSelect" onchange="updateDoseLabel()"></select>
                     </div>
                     <div class="form-group">
@@ -237,9 +237,9 @@
             <div class="card">
                 <h2>📈 체내 농도 분석</h2>
                 <div class="form-group" style="margin-bottom:15px;">
-                    <label>분석할 약물</label>
+                    <label>분석할 펩타이드</label>
                     <select id="graphDrugSelect" onchange="renderChart()" style="background-color: #e8f8f5; border-color: #27ae60; font-weight: bold;">
-                        <option value="">-- 약물 선택 --</option>
+                        <option value="">-- 펩타이드 선택 --</option>
                     </select>
                     
                     <div id="currentLevelBox" class="current-level-box">
@@ -499,7 +499,7 @@
             const unit = document.getElementById('drugUnit').value;
             const halfLife = parseFloat(document.getElementById('drugHalfLife').value);
             const note = document.getElementById('drugNote').value;
-            if (!name || isNaN(halfLife)) return alert("약물명과 반감기는 필수입니다.");
+            if (!name || isNaN(halfLife)) return alert("펩타이드명과 반감기는 필수입니다.");
             drugs.push({ id: Date.now(), name: name, unit: unit, halfLife: halfLife, note: note });
             saveData();
             updateUI();
@@ -522,7 +522,7 @@
             const site = document.getElementById('logSite').value;
             const date = document.getElementById('logDate').value;
             const time = document.getElementById('logTime').value;
-            if (!drugId || isNaN(dose)) return alert("약물과 용량을 확인하세요.");
+            if (!drugId || isNaN(dose)) return alert("펩타이드와 용량을 확인하세요.");
             const drug = drugs.find(d => d.id == drugId);
             logs.push({
                 id: Date.now(),
@@ -571,7 +571,7 @@
             const prevFilter = filterSelect.value;
 
             logSelect.innerHTML = '<option value="">선택하세요</option>';
-            graphSelect.innerHTML = '<option value="">-- 약물 선택 --</option>';
+            graphSelect.innerHTML = '<option value="">-- 펩타이드 선택 --</option>';
             filterSelect.innerHTML = '<option value="all">전체 기록</option>';
 
             drugs.forEach(d => {
@@ -842,4 +842,5 @@
     </script>
 </body>
 </html>
+
 
