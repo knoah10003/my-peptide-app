@@ -525,6 +525,8 @@
             saveData();
             updateUI();
             
+            // [수정됨] 알림 및 초기화
+            alert("펩타이드가 저장되었습니다.");
             document.getElementById('drugName').value = '';
             document.getElementById('drugHalfLife').value = '';
             document.getElementById('drugNote').value = '';
@@ -576,6 +578,13 @@
             });
             saveData();
             updateUI();
+            
+            // [수정됨] 알림 및 초기화 (용량, 부위 삭제 / 시간 갱신)
+            alert("투여 기록이 추가되었습니다.");
+            document.getElementById('logDose').value = '';
+            document.getElementById('logSite').value = '';
+            document.getElementById('logDate').valueAsDate = new Date();
+            document.getElementById('logTime').value = new Date().toTimeString().slice(0,5);
         }
 
         function deleteLog(id) {
